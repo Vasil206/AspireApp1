@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Diagnostics.Metrics;
-using NATS.Client.Core;
 using OpenTelemetry.Metrics;
 using WorkerService1;
 
@@ -14,7 +13,7 @@ builder.Metrics.EnableMetrics(WorkerOptions.Default.MeterName);
 builder.Services.AddOpenTelemetry().WithMetrics(conf =>
 {
     conf.AddMeter(WorkerOptions.Default.MeterName);
-    conf.AddPrometheusHttpListener(opts => opts.UriPrefixes = ["http://Worker"]);
+    conf.AddPrometheusHttpListener(opts => opts.UriPrefixes = [WorkerOptions.Default.PrometheusConnection]);
 });
 
 builder.Services.Configure<Data>(builder.Configuration.GetSection("Data"));

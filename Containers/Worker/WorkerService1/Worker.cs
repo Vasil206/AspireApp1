@@ -21,7 +21,6 @@ public class Worker : BackgroundService
     private bool _dataChanged;
 
     private readonly Dictionary<NameId, CpuRssValue> _measurements;
-    private readonly Meter _meter;
 
 
     public Worker(ILogger<Worker> logger, IOptionsMonitor<Data> dataMonitor, IMeterFactory meterFactory/*, INatsJSContext jsClient*/)
@@ -36,9 +35,31 @@ public class Worker : BackgroundService
         _onDataChange = _dataMonitor.OnChange(_ => _dataChanged = true);
 
         _measurements = new();
-        _meter = meterFactory.Create(WorkerOptions.Default.MeterName);
+        MetricsGetters(meterFactory.Create(WorkerOptions.Default.MeterName));
     }
 
+   private void MetricsGetters(Meter meter)
+    {
+        IEnumerable<Measurement<double>> ObserveCpu() => ObserveValues(val => val.Cpu);
+        meter.CreateObservableGauge("worker_processes_usage_cpu", ObserveCpu, unit: "%");
+
+        IEnumerable<Measurement<double>> ObserveRss() => ObserveValues(val => val.Rss);
+        meter.CreateObservableGauge("worker_processes_usage_rss", ObserveRss, unit: "Mb");
+    }
+
+    private IEnumerable<Measurement<double>> ObserveValues(Func<CpuRssValue, double> getVal)
+    {
+        var measurements = new Dictionary<NameId,CpuRssValue>(_measurements);
+        LinkedList<Measurement<double>> result = new();
+        foreach (var measurement in measurements)
+        {
+            result.AddLast(new Measurement<double>(getVal(measurement.Value),
+                new KeyValuePair<string, object?>("process_name", measurement.Key.Name),
+                new KeyValuePair<string, object?>("process_id", measurement.Key.Id)));
+        }
+
+        return result;
+    }
 
     private async Task<KeyValuePair<NameId, CpuRssValue>> DoWorkAsync(Process proc)
     {
@@ -103,37 +124,10 @@ public class Worker : BackgroundService
             new CpuRssValue(usageCpuTotal, rss));
     }
 
-
-    private IEnumerable<Measurement<double>> ObserveValues(Func<CpuRssValue, double> getVal)
-    {
-        var measurements = new Dictionary<NameId,CpuRssValue>(_measurements);
-        LinkedList<Measurement<double>> result = new();
-        foreach (var measurement in measurements)
-        {
-            result.AddLast(new Measurement<double>(getVal(measurement.Value),
-                new KeyValuePair<string, object?>("process_name", measurement.Key.Name),
-                new KeyValuePair<string, object?>("process_id", measurement.Key.Id)));
-        }
-
-        return result;
-    }
-
-    private void MetricsGetters()
-    {
-        IEnumerable<Measurement<double>> ObserveCpu() => ObserveValues(val => val.Cpu);
-        _meter.CreateObservableGauge("worker_processes_usage_cpu", ObserveCpu, unit: "%");
-
-        IEnumerable<Measurement<double>> ObserveRss() => ObserveValues(val => val.Rss);
-        _meter.CreateObservableGauge("worker_processes_usage_rss", ObserveRss, unit: "mb");
-    }
-
-
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         try
         {
-            MetricsGetters();
-
 
             ////////////////////////////////////////////////////////////////////////////////////////
             //set
@@ -202,7 +196,6 @@ public class Worker : BackgroundService
         }
         finally
         {
-            _meter.Dispose();
             _onDataChange?.Dispose();
         }
     }

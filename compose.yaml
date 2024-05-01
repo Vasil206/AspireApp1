@@ -1,0 +1,64 @@
+version: "3.1"
+
+services:
+
+  worker:
+    build:
+      context: .
+      target: final
+
+    container_name: cpu_rss_wacher
+
+    restart: unless-stopped
+
+
+  prometheus:
+    build:
+      context: ./Containers/prometheus
+
+    container_name: prometheus
+
+    volumes:
+      - prometheus_data:/prometheus
+
+    restart: unless-stopped
+
+
+  grafana:
+    build:
+      context: ./Containers/grafana
+
+    container_name: grafana
+
+    volumes:
+      - grafana_data:/var/lib/grafana
+
+    restart: unless-stopped
+
+
+  web_server:
+    build:
+      context: ./Containers/nginx
+
+    container_name: nginx_server
+    restart: unless-stopped
+    ports:
+      - 80:80
+ 
+
+  messages_server:
+    build:
+      context: ./Containers/nats
+
+    container_name: nats_server
+
+    volumes:
+      - nats_data:/tmp/nats
+
+    restart: unless-stopped
+
+
+volumes:
+  grafana_data:
+  prometheus_data:
+  nats_data:
