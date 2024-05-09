@@ -34,20 +34,20 @@ public class Worker : BackgroundService
         _dataMonitor = dataMonitor;
         _onDataChange = _dataMonitor.OnChange(_ => _dataChanged = true);
 
-        _measurements = new();
+        _measurements = new Dictionary<NameId, CpuRssValue>();
         MetricsGetters(meterFactory.Create(WorkerOptions.Default.MeterName));
     }
 
    private void MetricsGetters(Meter meter)
     {
-        IEnumerable<Measurement<double>> ObserveCpu() => ObserveValues(val => val.Cpu);
+        LinkedList<Measurement<double>> ObserveCpu() => ObserveValues(val => val.Cpu);
         meter.CreateObservableGauge("worker_processes_usage_cpu", ObserveCpu, unit: "%");
 
-        IEnumerable<Measurement<double>> ObserveRss() => ObserveValues(val => val.Rss);
+        LinkedList<Measurement<double>> ObserveRss() => ObserveValues(val => val.Rss);
         meter.CreateObservableGauge("worker_processes_usage_rss", ObserveRss, unit: "Mb");
     }
 
-    private IEnumerable<Measurement<double>> ObserveValues(Func<CpuRssValue, double> getVal)
+    private LinkedList<Measurement<double>> ObserveValues(Func<CpuRssValue, double> getVal)
     {
         var measurements = new Dictionary<NameId,CpuRssValue>(_measurements);
         LinkedList<Measurement<double>> result = new();
@@ -61,7 +61,7 @@ public class Worker : BackgroundService
         return result;
     }
 
-    private async Task<KeyValuePair<NameId, CpuRssValue>> DoWorkAsync(Process proc)
+    private async Task<KeyValuePair<NameId, CpuRssValue>> CalculateCpuRssUsage(Process proc)
     {
         var nameId = new NameId(proc.Id, proc.ProcessName);
 
@@ -148,7 +148,7 @@ public class Worker : BackgroundService
                 }
 
 
-                //making the array of async tasks with calculating of CPU usage;
+                //making the array of async tasks with calculating of CPU, RSS usage;
                 var metricsLoop = new Task<KeyValuePair<NameId, CpuRssValue>>[processes.Length][];
                 for (int i = 0; i < metricsLoop.Length; i++)
                 {
@@ -156,7 +156,7 @@ public class Worker : BackgroundService
                     for (int j = 0; j < metricsLoop[i].Length; j++)
                     {
                         metricsLoop[i][j] =
-                            DoWorkAsync(processes[i][j]); //starting of the calculating of CPU usage
+                            CalculateCpuRssUsage(processes[i][j]);
                     }
                 }
 
@@ -170,9 +170,15 @@ public class Worker : BackgroundService
 
 
                 //add to measurements   and   set nats streams
-                Parallel.ForEach(metricsLoop, results =>
-                    Parallel.ForEach(results, result =>
-                        SetStreamAndMeasurementAsync(result.Result, stoppingToken)));
+                foreach (var results in metricsLoop)
+                {
+                    foreach (var result in results)
+                    {
+                        _measurements[result.Result.Key] = result.Result.Value;
+                        SetStreamAsync(result.Result, stoppingToken);
+                    }
+                }
+                
 
                 UploadToNatsParallel(stoppingToken);
 
@@ -203,26 +209,32 @@ public class Worker : BackgroundService
 
     private void ClearMeasurementsAndStreams(CancellationToken stoppingToken)
     {
-        Parallel.ForEach(_measurements.Keys, ClearAndDelStream);
+        foreach (var key in _measurements.Keys)
+        {
+            if (_measurements[key].IsUsed)
+            {
+                _measurements.Remove(key);
+
+                
+                DelStream(key);
+            }
+            else
+            {
+                _measurements[key].Used();
+            }
+        }
         return;
 
-        async void ClearAndDelStream(NameId key)
+        async void DelStream(NameId key)
         {
             try
             {
-                if (_measurements[key].IsUsed)
-                {
+                var streamName = new StringBuilder($"{_streamsAndSubjectsPrefix}.{key}");
 
-                    _measurements.Remove(key);
+                streamName.Replace('.', '_');
+                streamName.Replace(' ', '_');
 
-                    var streamName = new StringBuilder($"{_streamsAndSubjectsPrefix}.{key}");
-
-                    streamName.Replace('.', '_');
-                    streamName.Replace(' ', '_');
-                    await _js.DeleteStreamAsync(streamName.ToString(), stoppingToken);
-                }
-                else
-                    _measurements[key].IsUsed = true;
+                await _js.DeleteStreamAsync(streamName.ToString(), stoppingToken);
             }
             catch (Exception ex)
             {
@@ -256,32 +268,29 @@ public class Worker : BackgroundService
         }
     }
 
-    private async void SetStreamAndMeasurementAsync(KeyValuePair<NameId, CpuRssValue> measurement,
+    private async void SetStreamAsync(KeyValuePair<NameId, CpuRssValue> measurement,
         CancellationToken stoppingToken)
     {
-        StringBuilder streamNameOrSubject = new StringBuilder();
-        streamNameOrSubject.Append($"{_streamsAndSubjectsPrefix}.{measurement.Key.ToString()}");
+        StringBuilder streamNameOrSubject = new();
+        streamNameOrSubject.Append($"{_streamsAndSubjectsPrefix}.{measurement.Key.AsString()}");
         string subject = streamNameOrSubject.ToString();
 
         streamNameOrSubject.Replace('.', '_');
         streamNameOrSubject.Replace(' ', '_');
-        string name = streamNameOrSubject.ToString();
+        string streamName = streamNameOrSubject.ToString();
 
         try
         {
             INatsJSStream? stream;
+
             if (_measurements.ContainsKey(measurement.Key))
             {
-                _measurements[measurement.Key] = measurement.Value;
-
-                stream = await _js.GetStreamAsync(name, cancellationToken: stoppingToken);
+                stream = await _js.GetStreamAsync(streamName, cancellationToken: stoppingToken);
             }
             else
             {
-                _measurements.Add(measurement.Key, measurement.Value);
-
                 stream = await _js.CreateStreamAsync(
-                    new StreamConfig(name, new[] { subject }),
+                    new StreamConfig(streamName, new[] { subject }),
                     stoppingToken);
             }
 

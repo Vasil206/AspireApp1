@@ -14,6 +14,7 @@
   <ItemGroup>
     <PackageReference Include="Aspire.NATS.Net" Version="8.0.0-preview.6.24214.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+    <PackageReference Include="OpenTelemetry.Exporter.Prometheus.AspNetCore" Version="1.8.0-rc.1" />
     <PackageReference Include="OpenTelemetry.Exporter.Prometheus.HttpListener" Version="1.8.0-rc.1" />
   </ItemGroup>
 
