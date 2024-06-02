@@ -43,10 +43,9 @@ services:
     
     restart: unless-stopped
 
-    expose:
-      - 18889
     ports:
       - 18888:18888
+      - 4317:18889
 
 
   web_server:
