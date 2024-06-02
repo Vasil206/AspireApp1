@@ -13,7 +13,7 @@ public class Worker : BackgroundService
 {
     private readonly string _streamsAndSubjectsPrefix;
 
-    private readonly INatsJSContext _js;
+    private readonly NatsJSContext _js;
     private readonly ILogger<Worker> _logger;
 
     private readonly IOptionsMonitor<Data> _dataMonitor;
@@ -34,11 +34,11 @@ public class Worker : BackgroundService
         _dataMonitor = dataMonitor;
         _onDataChange = _dataMonitor.OnChange(_ => _dataChanged = true);
 
-        _measurements = new Dictionary<NameId, CpuRssValue>();
+        _measurements = [];
         MetricsGetters(meterFactory.Create(WorkerOptions.Default.MeterName));
     }
 
-   private void MetricsGetters(Meter meter)
+    private void MetricsGetters(Meter meter)
     {
         LinkedList<Measurement<double>> ObserveCpu() => ObserveValues(val => val.Cpu);
         meter.CreateObservableGauge("worker_processes_usage_cpu", ObserveCpu, unit: "%");
@@ -174,8 +174,8 @@ public class Worker : BackgroundService
                 {
                     foreach (var result in results)
                     {
-                        _measurements[result.Result.Key] = result.Result.Value;
                         SetStreamAsync(result.Result, stoppingToken);
+                        _measurements[result.Result.Key] = result.Result.Value;
                     }
                 }
                 
@@ -290,7 +290,7 @@ public class Worker : BackgroundService
             else
             {
                 stream = await _js.CreateStreamAsync(
-                    new StreamConfig(streamName, new[] { subject }),
+                    new StreamConfig(streamName, [ subject ]),
                     stoppingToken);
             }
 

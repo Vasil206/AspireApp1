@@ -32,10 +32,7 @@
                     long timeExecSeconds = rand.Next(1, 170);
                     MemoryCpuLoad(timeExecSeconds);
                 }
-                catch (Exception e)
-                {
-                    
-                }
+                catch { }
             }
         }
     }

@@ -1,4 +1,6 @@
-﻿namespace WorkerService1;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace WorkerService1;
 
 internal readonly struct NameId(int id, string name)
 {
@@ -21,8 +23,11 @@ internal struct CpuRssValue(double cpu, double rss)
 }
 public class Data
 {
-    public int Interval { get; init; }
-    public string[] ProcessNames { get; init; } = default!;
+    [Range(100, int.MaxValue)]
+    public int Interval { get; set; }
+
+    [Required]
+    public string[] ProcessNames { get; set; } = default!;
 }
 
 public class WorkerOptions

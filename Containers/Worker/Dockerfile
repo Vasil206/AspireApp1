@@ -9,6 +9,6 @@ RUN dotnet workload install aspire
 
 RUN dotnet dev-certs https --trust
 
-EXPOSE 1234 17102
+EXPOSE 1234 
 
 ENTRYPOINT ["dotnet", "run", "--project", "./AspireApp1.AppHost"]

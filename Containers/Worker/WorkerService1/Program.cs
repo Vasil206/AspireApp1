@@ -14,17 +14,17 @@ builder.Metrics.EnableMetrics(WorkerOptions.Default.MeterName);
 builder.Services.AddOpenTelemetry().WithMetrics(conf =>
 {
     conf.AddPrometheusHttpListener(opts => opts.UriPrefixes = [WorkerOptions.Default.PrometheusConnection]);
-    //conf.AddPrometheusExporter();  doesn't work in docker          (1)
+    //conf.AddPrometheusExporter(); // doesn't work in docker          (1)
     conf.AddMeter(WorkerOptions.Default.MeterName);
 });
 
-builder.Services.Configure<Data>(builder.Configuration.GetSection("Data"));
+builder.Services.AddOptions<Data>().BindConfiguration("Data").ValidateDataAnnotations().ValidateOnStart();
 
 builder.Services.AddHostedService<Worker>();
 builder.Services.AddHostedService<Load>();
 
 var host = builder.Build();
 
-//host.MapPrometheusScrapingEndpoint("/metrics");                 (1')
+//host.MapPrometheusScrapingEndpoint("/metrics");                 //(1')
 
 host.Run();
