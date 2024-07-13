@@ -16,7 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WorkerService1\WorkerService1.csproj" />
+    <ProjectReference Include="..\AspireApp.BlazorMetricsTable\AspireApp.BlazorMetricsTable\AspireApp.MetricsTable.csproj" />
+    <ProjectReference Include="..\AspireApp.MetricsListenerAPI\AspireApp.MetricsTable.API.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,4 +1,4 @@
-﻿namespace WorkerService1
+﻿namespace AspireApp.MetricsTable.API.Services
 {
     internal class Load : BackgroundService
     {
@@ -32,7 +32,10 @@
                     long timeExecSeconds = rand.Next(1, 170);
                     MemoryCpuLoad(timeExecSeconds);
                 }
-                catch { }
+                catch
+                {
+                    // ignored
+                }
             }
         }
     }

@@ -1,0 +1,6 @@
+@AspireApp.MetricsListenerAPI_HostAddress = http://localhost:5245
+
+GET {{AspireApp.MetricsListenerAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

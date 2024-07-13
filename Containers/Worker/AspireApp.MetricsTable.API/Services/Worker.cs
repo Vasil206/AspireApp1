@@ -2,18 +2,19 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Text;
+using AspireApp.MetricsTable.Shared;
 using Microsoft.Extensions.Options;
 using NATS.Client.Core;
 using NATS.Client.JetStream;
 using NATS.Client.JetStream.Models;
 
-namespace WorkerService1;
+namespace AspireApp.MetricsTable.API.Services;
 
 public class Worker : BackgroundService
 {
     private readonly string _streamsAndSubjectsPrefix;
 
-    private readonly NatsJSContext _js;
+    private readonly NatsJSContext _natsJs;
     private readonly ILogger<Worker> _logger;
 
     private readonly IOptionsMonitor<Data> _dataMonitor;
@@ -26,7 +27,7 @@ public class Worker : BackgroundService
     public Worker(ILogger<Worker> logger, IOptionsMonitor<Data> dataMonitor, IMeterFactory meterFactory/*, INatsJSContext jsClient*/)
     {
         _streamsAndSubjectsPrefix = WorkerOptions.Default.StreamsAndSubjectsPrefix;
-        _js = /*jsClient*/new NatsJSContext(new NatsConnection(new NatsOpts { Url = WorkerOptions.Default.NatsConnection }));
+        _natsJs = /*jsClient*/new NatsJSContext(new NatsConnection(new NatsOpts { Url = WorkerOptions.Default.NatsConnection }));
 
         _dataChanged = false;
         _logger = logger;
@@ -234,7 +235,7 @@ public class Worker : BackgroundService
                 streamName.Replace('.', '_');
                 streamName.Replace(' ', '_');
 
-                await _js.DeleteStreamAsync(streamName.ToString(), stoppingToken);
+                await _natsJs.DeleteStreamAsync(streamName.ToString(), stoppingToken);
             }
             catch (Exception ex)
             {
@@ -254,7 +255,7 @@ public class Worker : BackgroundService
         {
             try
             {
-                var ack = await _js.PublishAsync(
+                var ack = await _natsJs.PublishAsync(
                     $"{_streamsAndSubjectsPrefix}.{measurement.Key}",
                     $"cpu: {measurement.Value.Cpu} || rss: {measurement.Value.Rss}",
                     cancellationToken: stoppingToken);
@@ -285,11 +286,11 @@ public class Worker : BackgroundService
 
             if (_measurements.ContainsKey(measurement.Key))
             {
-                stream = await _js.GetStreamAsync(streamName, cancellationToken: stoppingToken);
+                stream = await _natsJs.GetStreamAsync(streamName, cancellationToken: stoppingToken);
             }
             else
             {
-                stream = await _js.CreateStreamAsync(
+                stream = await _natsJs.CreateStreamAsync(
                     new StreamConfig(streamName, [ subject ]),
                     stoppingToken);
             }
