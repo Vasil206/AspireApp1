@@ -1,0 +1,32 @@
+﻿@page "/"
+@inject Services.IMetricsService MetricsService
+
+<PageTitle>Home</PageTitle>
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+@if (_meterNames == null)
+{
+    <i>Loading...</i>
+}
+else
+{
+    @foreach (var meterName in _meterNames)
+    {
+        <section>
+            <h3>@meterName</h3>
+        </section>
+    }
+}
+
+@code
+{
+    private List<string>? _meterNames;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _meterNames = await MetricsService.GetMeterNames();
+    }
+}

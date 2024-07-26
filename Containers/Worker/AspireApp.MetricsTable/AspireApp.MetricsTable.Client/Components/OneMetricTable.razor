@@ -1,0 +1,44 @@
+﻿@using AspireApp.MetricsTable.Shared
+
+<InputTextArea @onchange="OnFilterChange">Filter</InputTextArea>
+
+<table>
+    <caption>@MetricCaption</caption>
+    <thead>
+    <tr>
+        @foreach (var tagName in _filteredMeasurements[0].Tags)
+        {
+            <th>@tagName.Key</th>
+        }
+        <th>Value</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        @foreach (var measurement in _filteredMeasurements)
+        {
+            @foreach (var tagValue in measurement.Tags)
+            {
+                <td>@tagValue.Value</td>
+            }
+
+            <td>@measurement.Value</td>
+        }
+    </tr>
+    </tbody>
+
+</table>
+
+@code {
+    [Parameter]
+    public required string MetricCaption { get; set; }
+    [Parameter]
+    public required List<UserMeasurement> Measurements { get; set; }
+
+    private List<UserMeasurement> _filteredMeasurements = [];
+
+    private void OnFilterChange()
+    {
+
+    }
+}

@@ -1,5 +1,6 @@
-using AspireApp.BlazorMetricsTable.Client.Pages;
-using AspireApp.BlazorMetricsTable.Components;
+using AspireApp.MetricsTable.Client.Pages;
+using AspireApp.MetricsTable.Client.Services;
+using AspireApp.MetricsTable.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +10,9 @@ builder.AddServiceDefaults();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
+
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<IMetricsService, MetricsService>();
 
 var app = builder.Build();
 
@@ -34,6 +38,6 @@ app.UseAntiforgery();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
-    .AddAdditionalAssemblies(typeof(AspireApp.BlazorMetricsTable.Client._Imports).Assembly);
+    .AddAdditionalAssemblies(typeof(AspireApp.MetricsTable.Client._Imports).Assembly);
 
 app.Run();

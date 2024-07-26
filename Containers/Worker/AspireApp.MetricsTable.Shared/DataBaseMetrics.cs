@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.Metrics;
-
+﻿
 namespace AspireApp.MetricsTable.Shared;
 
 public class Meters : Dictionary<string, Instruments>;

@@ -8,11 +8,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspireApp1.ServiceDefaults"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspireApp.MetricsTable.API", "Containers\Worker\AspireApp.MetricsTable.API\AspireApp.MetricsTable.API.csproj", "{69D27F44-B095-463A-B566-B7ADDAC09000}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspireApp.MetricsTable", "Containers\Worker\AspireApp.MetricsTable (blazor)\AspireApp.BlazorMetricsTable\AspireApp.MetricsTable.csproj", "{3AB1D7A9-7EFA-441D-B950-8F0BCC7B5832}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspireApp.MetricsTable.Client", "Containers\Worker\AspireApp.MetricsTable (blazor)\AspireApp.BlazorMetricsTable.Client\AspireApp.MetricsTable.Client.csproj", "{FB0E4029-FD67-453E-A5A5-C6CED51C2A29}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspireApp.MetricsTable.Shared", "Containers\Worker\AspireApp.MetricsTable.Shared\AspireApp.MetricsTable.Shared.csproj", "{617CCB66-12C3-4E91-805B-5850C04EAC5A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspireApp.MetricsTable", "Containers\Worker\AspireApp.MetricsTable\AspireApp.MetricsTable\AspireApp.MetricsTable.csproj", "{FE2C6270-E76A-406A-8B1D-D1032DFFE874}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspireApp.MetricsTable.Client", "Containers\Worker\AspireApp.MetricsTable\AspireApp.MetricsTable.Client\AspireApp.MetricsTable.Client.csproj", "{D9B92A04-033C-46FD-9EDF-2E40547776ED}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,18 +32,18 @@ Global
 		{69D27F44-B095-463A-B566-B7ADDAC09000}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{69D27F44-B095-463A-B566-B7ADDAC09000}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{69D27F44-B095-463A-B566-B7ADDAC09000}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3AB1D7A9-7EFA-441D-B950-8F0BCC7B5832}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3AB1D7A9-7EFA-441D-B950-8F0BCC7B5832}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3AB1D7A9-7EFA-441D-B950-8F0BCC7B5832}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3AB1D7A9-7EFA-441D-B950-8F0BCC7B5832}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FB0E4029-FD67-453E-A5A5-C6CED51C2A29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FB0E4029-FD67-453E-A5A5-C6CED51C2A29}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FB0E4029-FD67-453E-A5A5-C6CED51C2A29}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FB0E4029-FD67-453E-A5A5-C6CED51C2A29}.Release|Any CPU.Build.0 = Release|Any CPU
 		{617CCB66-12C3-4E91-805B-5850C04EAC5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{617CCB66-12C3-4E91-805B-5850C04EAC5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{617CCB66-12C3-4E91-805B-5850C04EAC5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{617CCB66-12C3-4E91-805B-5850C04EAC5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE2C6270-E76A-406A-8B1D-D1032DFFE874}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE2C6270-E76A-406A-8B1D-D1032DFFE874}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE2C6270-E76A-406A-8B1D-D1032DFFE874}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE2C6270-E76A-406A-8B1D-D1032DFFE874}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9B92A04-033C-46FD-9EDF-2E40547776ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9B92A04-033C-46FD-9EDF-2E40547776ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9B92A04-033C-46FD-9EDF-2E40547776ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9B92A04-033C-46FD-9EDF-2E40547776ED}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

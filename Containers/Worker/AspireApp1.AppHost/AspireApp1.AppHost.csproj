@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -16,8 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AspireApp.BlazorMetricsTable\AspireApp.BlazorMetricsTable\AspireApp.MetricsTable.csproj" />
-    <ProjectReference Include="..\AspireApp.MetricsListenerAPI\AspireApp.MetricsTable.API.csproj" />
+    <ProjectReference Include="..\AspireApp.MetricsTable.API\AspireApp.MetricsTable.API.csproj" />
+    <ProjectReference Include="..\AspireApp.MetricsTable\AspireApp.MetricsTable\AspireApp.MetricsTable.csproj" />
   </ItemGroup>
 
 </Project>

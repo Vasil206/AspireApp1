@@ -49,21 +49,21 @@ namespace AspireApp.MetricsTable.API.Controllers
             _listener.Start();
         }
 
-        [HttpGet]
+        [HttpGet("meters")]
         public ActionResult<Meters> GetAll()
         {
             _listener.RecordObservableInstruments();
             return Ok(_meters);
         }
 
-        [HttpGet("meters")]
+        [HttpGet("meter_names")]
         public ActionResult<IEnumerable<string>> GetMeterNames()
         {
             _listener.RecordObservableInstruments();
             return Ok(_meters.Keys);
         }
 
-        [HttpGet("meters/{meterName}")]
+        [HttpGet("{meterName}/instrument_names")]
         public ActionResult<IEnumerable<string>> GetInstrumentNames(string meterName)
         {
             _listener.RecordObservableInstruments();
@@ -75,7 +75,7 @@ namespace AspireApp.MetricsTable.API.Controllers
             return NotFound("This Meter does not exists");
         }
 
-        [HttpGet("meters/{meterName}/{instrumentName}")]
+        [HttpGet("{meterName}/{instrumentName}/measurements")]
         public ActionResult<IEnumerable<UserMeasurement>> GetMeasurements(string meterName, string instrumentName)
         {
             _listener.RecordObservableInstruments();

@@ -7,8 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\AspireApp.MetricsTable.Shared\AspireApp.MetricsTable.Shared.csproj" />
     <ProjectReference Include="..\..\AspireApp1.ServiceDefaults\AspireApp1.ServiceDefaults.csproj" />
-    <ProjectReference Include="..\AspireApp.BlazorMetricsTable.Client\AspireApp.MetricsTable.Client.csproj" />
+    <ProjectReference Include="..\AspireApp.MetricsTable.Client\AspireApp.MetricsTable.Client.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.2" />
   </ItemGroup>
 
